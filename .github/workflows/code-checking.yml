@@ -9,7 +9,6 @@ on:
 
 ## jobs
 jobs:      ## kitni bhi ho skti hein
-  name: doing task
   ci-started:          ## pehli job ka naam
     runs-on: ubuntu-latest          ## runner for this job
     steps:
