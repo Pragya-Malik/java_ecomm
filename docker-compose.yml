@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: ecom_postgres
+    environment:
+      POSTGRES_DB:       ${POSTGRES_DB:-ecomdb}
+      POSTGRES_USER:     ${POSTGRES_USER:-ecomuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ecompass}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ecomuser} -d ${POSTGRES_DB:-ecomdb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ecom_net
+
+  # ── Backend (Spring Boot) ───────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ecom_backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL:      jdbc:postgresql://postgres:5432/${POSTGRES_DB:-ecomdb}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-ecomuser}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-ecompass}
+      CORS_ALLOWED_ORIGINS:       http://localhost:3000,http://frontend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ecom_net
+    restart: unless-stopped
+
+  # ── Frontend (React + Nginx) ────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+    container_name: ecom_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - ecom_net
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  ecom_net:
+    driver: bridge
