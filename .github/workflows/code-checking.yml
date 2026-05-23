@@ -1,0 +1,27 @@
+## workflow name
+name: task 1.1    
+ 
+## trigger
+on:
+  push:
+    branches:
+      - main
+
+## jobs
+jobs:      ## kitni bhi ho skti hein
+  name: doing task
+  ci-started:          ## pehli job ka naam
+    runs-on: ubuntu-latest          ## runner for this job
+    steps:
+      - name: printing "CI-Started!"
+        run: echo "CI-Started!"
+
+  os-info:             ## dusri job ka naam
+    runs-on: ubuntu-latest
+    steps:
+      - name: OS Info.
+        run: uname -a
+
+                              
+
+
