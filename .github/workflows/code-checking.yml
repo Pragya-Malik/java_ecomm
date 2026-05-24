@@ -1,26 +1,25 @@
-## workflow name
-name: task 1.1    
- 
-## trigger
+name: env   
+
 on:
   push:
     branches:
       - main
+  
+env:
+  COMPANY: Acme
+  VERSION: 1.0
 
-## jobs
-jobs:      ## kitni bhi ho skti hein
-  ci-started:          ## pehli job ka naam
-    runs-on: ubuntu-latest          ## runner for this job
-    steps:
-      - name: printing "CI-Started!"
-        run: echo "CI-Started!"
-
-  os-info:             ## dusri job ka naam
+jobs:
+  use-env:
     runs-on: ubuntu-latest
     steps:
-      - name: OS Info.
-        run: uname -a
+      - name: print company name
+        run: echo $COMPANY
 
-                              
+      - name: print version
+        run: echo $VERSION
+        
 
 
+
+  
