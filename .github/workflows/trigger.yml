@@ -2,17 +2,19 @@ name: triggers and ifs
 on: 
   workflow_dispatch:
   schedule:
-    - cron: '20 17 * * SUN'
+    - cron: '23 17 * * SUN'
 
 jobs:
   task:
     runs-on: ubuntu-latest
     name: trigger and ifs
     steps:
-      - name: trigger on schedule
-        if: github.event_name == 'schedule'
-        run: echo "this runs on schedule trigger"
-
       - name: trigger on workflow-dispatch
         if: github.event_name == 'workflow_dispatch'
-        run: echo "this runs on workflow-dispatch"
+        run: echo "this runs on workflow-dispatch!"
+
+      - name: trigger on schedule
+        if: github.event_name == 'schedule'
+        run: echo "this runs on schedule trigger!"
+
+     
